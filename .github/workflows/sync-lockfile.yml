@@ -1,0 +1,53 @@
+name: Sync lockfile
+
+# Regenerates package-lock.json and commits it back.
+#
+# Needed because this environment has no local Node toolchain, so dependency
+# changes in package.json cannot be locked locally. `npm ci` - used by both
+# ci-windows.yml and release.yml - hard-fails when package.json and the lock
+# file disagree, so the lock must be refreshed whenever dependencies change.
+#
+# Run this manually after editing dependencies, then let CI re-run.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-lockfile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --package-lock-only resolves the dependency tree and rewrites the lock
+      # without downloading packages, so this finishes in seconds.
+      - name: Resolve dependencies
+        run: npm install --package-lock-only --no-audit --no-fund
+
+      - name: Commit lockfile
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "package-lock.json already in sync"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore: sync package-lock.json with package.json"
+          git push origin HEAD:${{ github.ref_name }}
