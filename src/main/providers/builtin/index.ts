@@ -7,6 +7,7 @@ import perplexityConfig from './perplexity.ts'
 import qwenConfig from './qwen.ts'
 import qwenAiConfig from './qwen-ai.ts'
 import zaiConfig from './zai.ts'
+import { pluginProviderConfigs, pluginProviderMap } from '../../plugins/index.ts'
 import type { BuiltinProviderConfig } from '../../store/types.ts'
 
 export const builtinProviders: BuiltinProviderConfig[] = [
@@ -19,6 +20,7 @@ export const builtinProviders: BuiltinProviderConfig[] = [
   qwenConfig,
   qwenAiConfig,
   zaiConfig,
+  ...pluginProviderConfigs,
 ]
 
 export const builtinProviderMap: Record<string, BuiltinProviderConfig> = {
@@ -31,6 +33,7 @@ export const builtinProviderMap: Record<string, BuiltinProviderConfig> = {
   qwen: qwenConfig,
   'qwen-ai': qwenAiConfig,
   zai: zaiConfig,
+  ...pluginProviderMap,
 }
 
 export function getBuiltinProvider(id: string): BuiltinProviderConfig | undefined {

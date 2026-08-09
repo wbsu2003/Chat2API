@@ -1,0 +1,94 @@
+name: CI (Windows)
+
+# Test-stage CI: Windows only, per project decision.
+# Multi-platform builds happen in release.yml on tag push.
+#
+# Artifacts policy (storage quota is limited):
+#   - Nothing is uploaded by default; the job only proves the build works.
+#   - The electron-builder --dir output (~250MB unpacked) is NEVER uploaded.
+#   - Run this workflow manually with `upload_installer: true` to get a single
+#     NSIS .exe (~90MB) with a short retention window.
+#   - Release assets do NOT count against the Actions artifact quota, so
+#     release.yml publishes directly to a GitHub Release instead.
+
+on:
+  push:
+    tags-ignore:
+      - 'v*'
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      upload_installer:
+        description: 'Build and upload the NSIS installer (consumes artifact storage)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
+
+      # Guards the one-line anchors that wire src/main/plugins into upstream
+      # files. An upstream merge can silently drop them without breaking the
+      # build, which would disable every plugin provider at runtime.
+      - name: Verify plugin anchors
+        run: node scripts/verify-anchors.js
+
+      # Node's default test matcher is **/*.test.?(c|m)js, so the repository's
+      # .ts test files are skipped. They have no runner configured (no tsx or
+      # vitest) and have never run in CI; enabling them is tracked separately.
+      - name: Run tests
+        run: node --test tests/
+
+      # Plugin unit tests are TypeScript and run through tsx. Kept separate from
+      # the command above so the repository's pre-existing .ts tests (which have
+      # never had a runner) are not pulled in.
+      - name: Run plugin unit tests
+        run: npm run test:plugins
+
+      - name: Build application
+        run: npm run build
+        env:
+          ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
+
+      # Proves the electron-builder config (asarUnpack, extraResources,
+      # fileAssociations) is still valid without producing an installer.
+      - name: Verify packaging
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.upload_installer) }}
+        run: npx electron-builder --win --x64 --dir
+        env:
+          ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
+
+      - name: Build installer
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_installer }}
+        run: npx electron-builder --win --x64
+        env:
+          ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
+
+      - name: Upload installer
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_installer }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat2api-win-x64-installer
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0

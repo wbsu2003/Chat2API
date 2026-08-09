@@ -14,6 +14,8 @@ import {
   Info,
   MessageSquare,
   AlertTriangle,
+  Globe,
+  Bot,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSettingsStore } from '@/stores/settingsStore'
@@ -36,8 +38,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { titleKey: 'nav.dashboard', href: '/', icon: LayoutDashboard },
+  { titleKey: 'nav.chat', href: '/chat', icon: Bot },
   { titleKey: 'nav.providers', href: '/providers', icon: Server },
   { titleKey: 'nav.proxy', href: '/proxy', icon: Settings2 },
+  { titleKey: 'nav.network', href: '/network', icon: Globe },
   { titleKey: 'nav.models', href: '/models', icon: Cpu },
   { titleKey: 'nav.session', href: '/session', icon: MessageSquare },
   { titleKey: 'nav.apiKeys', href: '/api-keys', icon: Key },

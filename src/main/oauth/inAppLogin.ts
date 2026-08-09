@@ -7,6 +7,8 @@ import { BrowserWindow, session, Session } from 'electron'
 import { EventEmitter } from 'events'
 import { ProviderType } from './types'
 import { TokenExtractionConfig, getTokenExtractionConfig, TokenSource } from './tokenExtractionConfig'
+import { resolveProviderProxy } from '../plugins/net/proxyConfig'
+import { toElectronProxyConfig, describeProxyRule } from '../plugins/net/resolve'
 
 export interface InAppLoginResult {
   success: boolean
@@ -94,6 +96,19 @@ export class InAppLoginManager extends EventEmitter {
       this.loginSession.setProxy({ mode: 'direct' }).catch((error) => {
         console.error('[InAppLogin] Failed to set direct proxy:', error)
       })
+    } else if (this.options) {
+      // Route the login window through this provider's configured proxy.
+      // Without it, providers unreachable on a direct connection never load
+      // their login page, so credentials can never be captured.
+      const rule = resolveProviderProxy(this.options.providerId)
+      if (rule) {
+        console.log(
+          `[InAppLogin] Login window for "${this.options.providerId}" via ${describeProxyRule(rule)}`
+        )
+        this.loginSession.setProxy(toElectronProxyConfig(rule)).catch((error) => {
+          console.error('[InAppLogin] Failed to set provider proxy:', error)
+        })
+      }
     }
 
     this.loginWindow = new BrowserWindow({
@@ -109,6 +124,19 @@ export class InAppLoginManager extends EventEmitter {
       },
       title: this.config.windowTitle || 'Login',
       autoHideMenuBar: true,
+    })
+
+    // Electron's setProxy() carries no credentials. An authenticated proxy
+    // challenges the request, and without answering it here the login page
+    // silently fails to load.
+    this.loginWindow.webContents.on('login', (event, _details, authInfo, callback) => {
+      if (!authInfo.isProxy || !this.options) return
+
+      const rule = resolveProviderProxy(this.options.providerId)
+      if (!rule?.username) return
+
+      event.preventDefault()
+      callback(rule.username, rule.password ?? '')
     })
 
     this.loginWindow.once('ready-to-show', () => {

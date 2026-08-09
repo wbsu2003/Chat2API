@@ -24,6 +24,7 @@ import { PerplexityStreamHandler } from './adapters/perplexity-stream'
 import { ToolCallingEngine } from './toolCalling/ToolCallingEngine'
 import type { ToolCallingTransformResult } from './toolCalling/types'
 import { sessionManager } from './sessionManager'
+import { pluginForwarders } from '../plugins'
 import {
   createContextManagementService,
   SummaryGenerator,
@@ -111,6 +112,7 @@ export class RequestForwarder {
       forward: (request, account, provider, actualModel, startTime) =>
         this.forwardPerplexity(request, account, provider, actualModel, startTime),
     },
+    ...pluginForwarders,
   ]
 
   /**

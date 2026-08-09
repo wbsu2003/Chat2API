@@ -17,7 +17,13 @@ export default defineConfig({
           'mime-types',
           'zstd-codec',
           'electron-store',
-          'electron-updater'
+          'electron-updater',
+          // Proxy agents for per-provider networking. These MUST stay bundled:
+          // if externalized they resolve at dev time but are missing from the
+          // packaged asar, failing at runtime with "Cannot find module".
+          'http-proxy-agent',
+          'https-proxy-agent',
+          'socks-proxy-agent'
         ]
       })
     ],

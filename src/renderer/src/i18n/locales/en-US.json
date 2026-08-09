@@ -9,14 +9,60 @@
   },
   "nav": {
     "dashboard": "Dashboard",
+    "chat": "Chat",
     "providers": "Providers",
     "proxy": "Proxy Settings",
+    "network": "Network Proxy",
     "models": "Models",
     "apiKeys": "API Keys",
     "logs": "Logs",
     "session": "Session",
     "settings": "Settings",
     "about": "About"
+  },
+  "chat": {
+    "selectProvider": "Select provider",
+    "selectModel": "Select model",
+    "newSession": "New chat",
+    "noSessions": "No conversations yet",
+    "emptyHint": "Send a message to start. Requests go through the local API, the same path external clients like Cline use.",
+    "inputPlaceholder": "Type a message. Enter to send, Shift+Enter for a new line",
+    "thinking": "Thinking...",
+    "streaming": "Generating, click stop to cancel",
+    "errors": {
+      "proxyNotRunning": "The local API server is not running. Start it from Proxy Settings first.",
+      "noApiKey": "API key authentication is enabled but no key is available. Add and enable one on the API Keys page.",
+      "noModel": "Select a model first"
+    }
+  },
+  "proxyNet": {
+    "title": "Network Proxy",
+    "description": "Configure outbound proxies per provider. Providers such as Grok, Claude and ChatGPT are unreachable on a direct connection in some regions.",
+    "globalTitle": "Global Proxy",
+    "globalDescription": "Applied to every provider without its own setting.",
+    "globalOn": "Use a proxy",
+    "globalOff": "No proxy (direct)",
+    "perProviderTitle": "Per-provider Settings",
+    "perProviderDescription": "\"Inherit\" follows the global rule, \"Direct\" forces no proxy, \"Custom\" sets one for this provider only.",
+    "noProviders": "No providers yet",
+    "protocol": "Protocol",
+    "host": "Host",
+    "port": "Port",
+    "username": "Username",
+    "password": "Password",
+    "optional": "Optional",
+    "modeInherit": "Inherit global",
+    "modeDirect": "Force direct",
+    "modeCustom": "Custom",
+    "test": "Test",
+    "outboundIp": "Outbound IP",
+    "saved": "Saved",
+    "saveFailed": "Failed to save",
+    "errors": {
+      "hostRequired": "Proxy host is required",
+      "portInvalid": "Port must be an integer between 1 and 65535",
+      "passwordNeedsUser": "A password requires a username"
+    }
   },
   "dashboard": {
     "title": "Dashboard",

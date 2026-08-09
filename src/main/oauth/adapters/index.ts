@@ -24,14 +24,18 @@ import { QwenAdapter } from './qwen'
 import { QwenAiAdapter } from './qwen-ai'
 import { ZaiAdapter } from './zai'
 import { ProviderType, AdapterConfig } from '../types'
+import { createPluginOAuthAdapter, getPluginAuthMethods } from '../../plugins'
 
 /**
  * Adapter factory function
  */
 export function createAdapter(
-  providerType: ProviderType,
+  providerType: ProviderType | string,
   config: AdapterConfig
 ): BaseOAuthAdapter {
+  const pluginAdapter = createPluginOAuthAdapter(providerType, config)
+  if (pluginAdapter) return pluginAdapter
+
   switch (providerType) {
     case 'deepseek':
       return new DeepSeekAdapter(config)
@@ -59,7 +63,10 @@ export function createAdapter(
 /**
  * Get supported authentication methods for provider
  */
-export function getSupportedAuthMethods(providerType: ProviderType): string[] {
+export function getSupportedAuthMethods(providerType: ProviderType | string): string[] {
+  const pluginMethods = getPluginAuthMethods(providerType)
+  if (pluginMethods) return pluginMethods
+
   switch (providerType) {
     case 'deepseek':
       return ['manual']

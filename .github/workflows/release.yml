@@ -6,6 +6,12 @@ on:
       - 'v*.*.*'
       - 'v*.*.*-*'
 
+# Never cancel a release mid-flight: a half-published Release leaves partial
+# assets attached to the tag.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}

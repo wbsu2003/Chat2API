@@ -24,6 +24,7 @@ import { PerplexityAdapter } from '../proxy/adapters/perplexity'
 import { QwenAdapter } from '../proxy/adapters/qwen'
 import { QwenAiAdapter } from '../proxy/adapters/qwen-ai'
 import { ZaiAdapter } from '../proxy/adapters/zai'
+import { registerPluginIpcHandlers } from '../plugins/ipc'
 import type { Provider, Account, ProxyStatus, ProviderCheckResult, OAuthResult, AuthType, CredentialField, LogLevel, LogEntry, ProviderVendor, AppConfig } from '../../shared/types'
 import type { SystemPrompt, SessionConfig, SessionRecord, ManagementApiConfig } from '../store/types'
 import type { ProviderType } from '../oauth/types'
@@ -103,6 +104,10 @@ export async function registerIpcHandlers(mainWindow: BrowserWindow | null): Pro
       proxyServer = null
     }
   }
+
+  // Plugin-owned IPC (per-provider proxy). Registered in one call so this file
+  // carries a single anchor line instead of a growing block of handlers.
+  registerPluginIpcHandlers()
 
   ipcMain.handle(IpcChannels.PROXY_START, async (_, port?: number): Promise<boolean> => {
     try {

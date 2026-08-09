@@ -462,6 +462,81 @@ interface ToolCallingAPI {
   runSmoke: (input: { clientAdapterId: string }) => Promise<{ success: boolean; data?: unknown; error?: { message?: string } }>
 }
 
+/**
+ * Plugin APIs. Mirrors `src/preload/plugins.ts`; the shapes are duplicated here
+ * the same way the rest of this file mirrors the preload bridge.
+ */
+export type ProxyProtocol = 'http' | 'https' | 'socks5'
+
+export interface ProxyRule {
+  protocol: ProxyProtocol
+  host: string
+  port: number
+  username?: string
+  password?: string
+}
+
+export interface PluginProxyConfig {
+  /** Applied to providers without an explicit override */
+  global: ProxyRule | null
+  /** providerId -> override; null means "force direct" */
+  perProvider: Record<string, ProxyRule | null>
+}
+
+export interface ProxyTestResult {
+  success: boolean
+  via: string
+  status?: number
+  latency?: number
+  outboundIp?: string
+  error?: string
+}
+
+export interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  createdAt: number
+  failed?: boolean
+}
+
+export interface ChatSession {
+  id: string
+  providerId: string
+  model: string
+  title: string
+  messages: ChatMessage[]
+  createdAt: number
+  updatedAt: number
+}
+
+export type ChatSessionSummary = Omit<ChatSession, 'messages'> & { messageCount: number }
+
+interface PluginsAPI {
+  proxy: {
+    getConfig: () => Promise<PluginProxyConfig>
+    setGlobal: (rule: ProxyRule | null) => Promise<PluginProxyConfig>
+    /** Pass undefined to inherit the global rule, null to force direct */
+    setProvider: (
+      providerId: string,
+      override: ProxyRule | null | undefined
+    ) => Promise<PluginProxyConfig>
+    test: (providerId: string, url?: string) => Promise<ProxyTestResult>
+  }
+  chat: {
+    listSessions: (providerId?: string) => Promise<ChatSessionSummary[]>
+    getSession: (id: string) => Promise<ChatSession | null>
+    createSession: (providerId: string, model: string, title?: string) => Promise<ChatSession>
+    saveMessages: (id: string, messages: ChatMessage[]) => Promise<ChatSession | null>
+    updateSession: (
+      id: string,
+      patch: Partial<Pick<ChatSession, 'title' | 'model'>>
+    ) => Promise<ChatSession | null>
+    deleteSession: (id: string) => Promise<boolean>
+    clearProvider: (providerId: string) => Promise<number>
+  }
+}
+
 interface ElectronAPI {
   proxy: ProxyAPI
   store: StoreAPI
@@ -479,6 +554,7 @@ interface ElectronAPI {
   contextManagement: ContextManagementAPI
   toolCalling: ToolCallingAPI
   tray: TrayAPI
+  plugins: PluginsAPI
   on: (channel: string, callback: (...args: unknown[]) => void) => () => void
   send: (channel: string, ...args: unknown[]) => void
   invoke: (channel: string, ...args: unknown[]) => Promise<unknown>
