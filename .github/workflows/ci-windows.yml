@@ -12,9 +12,13 @@ name: CI (Windows)
 #     release.yml publishes directly to a GitHub Release instead.
 
 on:
+  # Only `branches` is declared: GitHub skips a push workflow entirely for
+  # branch pushes when the push filter defines just tags/tags-ignore. Declaring
+  # branches also means tag pushes do not trigger this workflow, which is what
+  # we want - tags are release.yml's job.
   push:
-    tags-ignore:
-      - 'v*'
+    branches:
+      - '**'
   pull_request:
   workflow_dispatch:
     inputs:
