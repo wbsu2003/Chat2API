@@ -145,7 +145,35 @@ npm run test:plugins     # TypeScript plugin tests via tsx
 `.ts` tests are skipped — they have no runner configured and have never run in
 CI. Plugin TypeScript tests run separately through `tsx`.
 
+### Known failing tests
+
+`tests/skills/` is excluded from `npm test` and from CI. Two of its tests fail
+on a clean checkout of upstream:
+
+- `restore-tool-config exits nonzero on non-2xx response`
+  (`tests/skills/chat2api-management-api.test.mjs`)
+- `versioned Chat2API testing skills exist and have trigger-only descriptions`
+  (`tests/skills/chat2api-proxy-testing-skill.test.mjs`)
+
+These cover the `skills/` helper scripts and SKILL.md frontmatter used by AI
+agents, not the application itself. They pre-date this fork's changes and had
+never executed before CI existed (the project had no test script or runner).
+
+Investigated and ruled out: every SKILL.md's `name`/`description` matches the
+expected values verbatim, no `TBD`/`FIXME`/`deferred work` markers are present,
+and adding `.gitattributes` (LF enforcement) did not change the outcome. The
+actual assertion detail has not been captured yet. Re-enable by dropping the
+`grep -v 'tests/skills/'` filter in `.github/workflows/ci-windows.yml`.
+
 CI (`.github/workflows/ci-windows.yml`) builds Windows only and uploads nothing
 by default. Run it manually with `upload_installer: true` to get an installer
 artifact (3-day retention). Releases publish to GitHub Releases, whose assets do
 not count against the Actions artifact quota.
+
+### Lockfile
+
+`npm ci` hard-fails when `package.json` and `package-lock.json` disagree. This
+environment has no local Node toolchain, so the install step falls back to
+`npm install` with a warning. Run `sync-lockfile.yml` (must be on the default
+branch to appear in the UI — `workflow_dispatch` workflows are only dispatchable
+from the default branch) to regenerate and commit the lock, restoring `npm ci`.

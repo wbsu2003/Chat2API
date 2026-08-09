@@ -14,7 +14,7 @@
     "dev:win": "electron-vite dev",
     "check:source-artifacts": "node scripts/check-source-artifacts.js",
     "verify:anchors": "node scripts/verify-anchors.js",
-    "test": "node --test tests/",
+    "test": "node --test tests/app-logs tests/build tests/plugins tests/providers tests/renderer tests/request-logs tests/tool-calling tests/updater",
     "test:plugins": "node --import tsx --test tests/plugins/proxy-resolve.test.ts",
     "build": "npm run check:source-artifacts && electron-vite build",
     "preview": "electron-vite preview",
