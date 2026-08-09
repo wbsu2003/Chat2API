@@ -73,7 +73,16 @@ jobs:
       - name: Run tests
         id: tests
         continue-on-error: true
-        run: node --test tests/
+        shell: bash
+        run: |
+          set +e
+          node --test tests/ 2>&1 | tee test-output.txt
+          code=${PIPESTATUS[0]}
+          echo ""
+          echo "===================== FAILING TESTS ====================="
+          grep -E '^not ok ' test-output.txt || echo "(none)"
+          echo "========================================================="
+          exit $code
 
       - name: Run plugin unit tests
         id: plugin_tests
