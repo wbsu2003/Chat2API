@@ -81,6 +81,11 @@ jobs:
           echo ""
           echo "===================== FAILING TESTS ====================="
           grep -E '^not ok ' test-output.txt || echo "(none)"
+          echo ""
+          echo "-------------------- FAILURE DETAIL ---------------------"
+          # TAP emits a YAML block with the assertion detail after each
+          # failure; print it so the actual expected/actual values show up.
+          awk '/^not ok /{show=25} show&&show-->0' test-output.txt || true
           echo "========================================================="
           exit $code
 

@@ -1,0 +1,22 @@
+# Force LF for text files in the working tree.
+#
+# Git for Windows defaults to core.autocrlf=true, which rewrites LF to CRLF on
+# checkout. Several tests in tests/skills/ assert on frontmatter with hardcoded
+# \n patterns, so a CRLF checkout makes them fail on Windows only - which is
+# exactly where this project's CI runs.
+* text=auto eol=lf
+
+# Windows batch files genuinely need CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Never touch binaries
+*.png binary
+*.ico binary
+*.icns binary
+*.wasm binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.woff binary
+*.woff2 binary
