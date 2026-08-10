@@ -27,6 +27,7 @@ import type {
 import { FilterType, StatusFilter } from '@/components/providers/ProviderFilter'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Server, ArrowLeft } from 'lucide-react'
+import { ProviderProxySection } from '@/plugins/proxy/ProviderProxySection'
 
 type ViewMode = 'providers' | 'accounts' | 'account-detail'
 
@@ -623,6 +624,11 @@ export function Providers() {
             {t('providers.manageAllAccounts')}
           </p>
         </div>
+
+        <ProviderProxySection
+          providerId={selectedProvider.id}
+          providerName={selectedProvider.name}
+        />
 
         <AccountList
           accounts={providerAccounts}

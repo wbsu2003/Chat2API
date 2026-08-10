@@ -90,6 +90,13 @@ const ANCHORS = [
     patterns: [/'nav\.chat'/, /'nav\.network'/],
     reason: 'Chat and network entries must stay in the sidebar navigation',
   },
+  {
+    id: 'account-screen-proxy',
+    file: 'src/renderer/src/pages/Providers.tsx',
+    patterns: [/ProviderProxySection/],
+    reason:
+      'Proxy must be configurable from the account screen: the login window needs it before any account exists',
+  },
 ]
 
 function checkAnchors(root = process.cwd()) {

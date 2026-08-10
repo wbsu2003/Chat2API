@@ -31,6 +31,7 @@ test('anchor list covers the provider registration surface', () => {
     'preload-bridge',
     'renderer-routes',
     'sidebar-entries',
+    'account-screen-proxy',
   ]) {
     assert.ok(ids.includes(required), `Anchor "${required}" is no longer tracked`)
   }

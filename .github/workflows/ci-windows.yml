@@ -35,6 +35,16 @@ jobs:
   build:
     runs-on: windows-latest
 
+    env:
+      # Build and upload an installer when either:
+      #   - manually dispatched with upload_installer checked, or
+      #   - the pushed commit message contains [installer]
+      #
+      # The commit-message route exists because workflow_dispatch is only
+      # offered for workflows present on the default branch, so it is
+      # unavailable while this work lives on a feature branch.
+      WANT_INSTALLER: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_installer) || contains(github.event.head_commit.message, '[installer]') }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -98,22 +108,27 @@ jobs:
       # Proves the electron-builder config (asarUnpack, extraResources,
       # fileAssociations) is still valid without producing an installer.
       - name: Verify packaging
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.upload_installer) }}
+        if: env.WANT_INSTALLER != 'true'
         run: npx electron-builder --win --x64 --dir
         env:
           ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
 
-      - name: Build installer
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_installer }}
-        run: npx electron-builder --win --x64
+      # Only the portable target. package.json's win.target lists both nsis and
+      # portable, and a bare `--win` builds both - NSIS needs an extra toolchain
+      # download (nsis, winCodeSign) that fails in CI, taking the whole step
+      # down with it. A portable single-file exe is also friendlier for ad-hoc
+      # verification: download, run, delete. NSIS stays for real releases.
+      - name: Build portable app
+        if: env.WANT_INSTALLER == 'true'
+        run: npx electron-builder --win portable --x64 --publish never
         env:
           ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
 
-      - name: Upload installer
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_installer }}
+      - name: Upload portable app
+        if: env.WANT_INSTALLER == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: chat2api-win-x64-installer
+          name: chat2api-win-x64-portable
           path: dist/*.exe
           if-no-files-found: error
           retention-days: 3

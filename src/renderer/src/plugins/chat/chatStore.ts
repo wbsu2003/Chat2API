@@ -6,12 +6,23 @@ import type { ChatMessage, ChatSessionSummary, Provider } from '@/types/electron
  * the forwarder directly. That is deliberate: it exercises exactly the same
  * path external clients (Cline, Roo-Code, Cherry Studio) use, so this page
  * doubles as a self-test for the API surface.
+ *
+ * The proxy server is started on demand: requiring the user to go to another
+ * page and start it before chatting is needless friction.
  */
 async function resolveEndpoint(): Promise<{ url: string; headers: Record<string, string> }> {
-  const status = await window.electronAPI.proxy.getStatus()
+  let status = await window.electronAPI.proxy.getStatus()
 
   if (!status?.isRunning) {
-    throw new Error('chat.errors.proxyNotRunning')
+    const started = await window.electronAPI.proxy.start()
+    if (!started) {
+      throw new Error('chat.errors.proxyStartFailed')
+    }
+
+    status = await window.electronAPI.proxy.getStatus()
+    if (!status?.isRunning) {
+      throw new Error('chat.errors.proxyStartFailed')
+    }
   }
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
