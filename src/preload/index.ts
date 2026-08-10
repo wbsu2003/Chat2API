@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { IpcChannels } from '../main/ipc/channels'
+import { pluginsAPI } from './plugins'
 import type { 
   Provider, 
   Account, 
@@ -701,7 +702,8 @@ const electronAPI = {
   contextManagement: contextManagementAPI,
   toolCalling: toolCallingAPI,
   tray: trayAPI,
-  
+  plugins: pluginsAPI,
+
   on: (channel: string, callback: (...args: unknown[]) => void) => {
     const subscription = (_event: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args)
     ipcRenderer.on(channel, subscription)

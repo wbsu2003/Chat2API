@@ -9,14 +9,60 @@
   },
   "nav": {
     "dashboard": "仪表盘",
+    "chat": "聊天",
     "providers": "供应商",
     "proxy": "代理设置",
+    "network": "网络代理",
     "models": "模型管理",
     "apiKeys": "API Key",
     "logs": "日志",
     "session": "会话管理",
     "settings": "设置",
     "about": "关于"
+  },
+  "chat": {
+    "selectProvider": "选择供应商",
+    "selectModel": "选择模型",
+    "newSession": "新建会话",
+    "noSessions": "还没有会话",
+    "emptyHint": "发条消息开始聊天。消息会通过本地 API 转发，和 Cline 等外部客户端走同一条链路。",
+    "inputPlaceholder": "输入消息，Enter 发送，Shift+Enter 换行",
+    "thinking": "思考中…",
+    "streaming": "正在生成，可点击停止",
+    "errors": {
+      "proxyNotRunning": "本地 API 服务未启动，请先在「代理设置」中启动",
+      "noApiKey": "已启用 API Key 认证，但没有可用的密钥，请在「API Key」页添加并启用",
+      "noModel": "请先选择模型"
+    }
+  },
+  "proxyNet": {
+    "title": "网络代理",
+    "description": "为各供应商单独配置出站代理。国内网络下 Grok、Claude、ChatGPT 等需要代理才能连通。",
+    "globalTitle": "全局代理",
+    "globalDescription": "未单独设置的供应商都走这条规则。",
+    "globalOn": "启用代理",
+    "globalOff": "不使用代理（直连）",
+    "perProviderTitle": "按供应商设置",
+    "perProviderDescription": "「继承」跟随全局，「直连」强制不走代理，「自定义」为该供应商单独指定。",
+    "noProviders": "暂无供应商",
+    "protocol": "协议",
+    "host": "主机",
+    "port": "端口",
+    "username": "用户名",
+    "password": "密码",
+    "optional": "选填",
+    "modeInherit": "继承全局",
+    "modeDirect": "强制直连",
+    "modeCustom": "自定义",
+    "test": "测试",
+    "outboundIp": "出口 IP",
+    "saved": "已保存",
+    "saveFailed": "保存失败",
+    "errors": {
+      "hostRequired": "请填写代理主机",
+      "portInvalid": "端口需为 1-65535 之间的整数",
+      "passwordNeedsUser": "填写密码时必须同时填写用户名"
+    }
   },
   "dashboard": {
     "title": "仪表盘",

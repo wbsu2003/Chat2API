@@ -4,6 +4,7 @@
  */
 
 import { ProviderType } from './types'
+import { pluginTokenExtraction } from '../plugins'
 
 export type TokenSourceType = 'networkHeader' | 'localStorage' | 'cookie'
 
@@ -22,7 +23,11 @@ export interface TokenExtractionConfig {
   windowTitle?: string
 }
 
-export const TOKEN_EXTRACTION_CONFIGS: Record<ProviderType, TokenExtractionConfig> = {
+/**
+ * Keyed by provider id. Widened from `Record<ProviderType, ...>` so plugin
+ * providers can contribute entries without extending the ProviderType union.
+ */
+export const TOKEN_EXTRACTION_CONFIGS: Record<string, TokenExtractionConfig> = {
   kimi: {
     loginUrl: 'https://www.kimi.com',
     tokenSources: [
@@ -162,8 +167,11 @@ export const TOKEN_EXTRACTION_CONFIGS: Record<ProviderType, TokenExtractionConfi
     successUrlPatterns: [/perplexity\.ai/i],
     windowTitle: 'Perplexity Login - Please click Sign In to login',
   },
+  ...pluginTokenExtraction,
 }
 
-export function getTokenExtractionConfig(providerType: ProviderType): TokenExtractionConfig | null {
+export function getTokenExtractionConfig(
+  providerType: ProviderType | string
+): TokenExtractionConfig | null {
   return TOKEN_EXTRACTION_CONFIGS[providerType] || null
 }

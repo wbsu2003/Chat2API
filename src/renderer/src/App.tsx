@@ -14,6 +14,8 @@ const Logs = lazy(() => import('@/pages/Logs'))
 const Settings = lazy(() => import('@/pages/Settings').then(m => ({ default: m.Settings })))
 const About = lazy(() => import('@/pages/About').then(m => ({ default: m.About })))
 const SessionManagement = lazy(() => import('@/pages/SessionManagement').then(m => ({ default: m.SessionManagement })))
+const NetworkPage = lazy(() => import('@/plugins/proxy/NetworkPage').then(m => ({ default: m.NetworkPage })))
+const ChatPage = lazy(() => import('@/plugins/chat/ChatPage').then(m => ({ default: m.ChatPage })))
 
 function PageLoader() {
   return (
@@ -35,8 +37,10 @@ function App() {
         <Route path="/tray" element={<TrayView />} />
         <Route element={<MainLayout />}>
           <Route path="/" element={<Suspense fallback={<PageLoader />}><Dashboard /></Suspense>} />
+          <Route path="/chat" element={<Suspense fallback={<PageLoader />}><ChatPage /></Suspense>} />
           <Route path="/providers" element={<Suspense fallback={<PageLoader />}><Providers /></Suspense>} />
           <Route path="/proxy" element={<Suspense fallback={<PageLoader />}><ProxySettings /></Suspense>} />
+          <Route path="/network" element={<Suspense fallback={<PageLoader />}><NetworkPage /></Suspense>} />
           <Route path="/models" element={<Suspense fallback={<PageLoader />}><Models /></Suspense>} />
           <Route path="/api-keys" element={<Suspense fallback={<PageLoader />}><ApiKeys /></Suspense>} />
           <Route path="/logs" element={<Suspense fallback={<PageLoader />}><Logs /></Suspense>} />

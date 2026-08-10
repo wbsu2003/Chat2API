@@ -58,3 +58,4 @@ src/renderer/next-app/
 
 # Backup
 backup/
+test-output.txt

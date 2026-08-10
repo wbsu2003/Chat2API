@@ -4,6 +4,7 @@
  */
 
 import type { ProviderVendor } from '../../shared/types'
+import { pluginManualTokenConfigs } from '../plugins'
 
 export type ProviderType = Exclude<ProviderVendor, 'custom'>
 
@@ -127,9 +128,11 @@ export interface ManualTokenConfig {
 }
 
 /**
- * Manual input config for each provider
+ * Manual input config for each provider.
+ * Keyed by provider id; widened from `Record<ProviderType, ...>` so plugin
+ * providers can contribute entries without extending the ProviderType union.
  */
-export const MANUAL_TOKEN_CONFIGS: Record<ProviderType, ManualTokenConfig[]> = {
+export const MANUAL_TOKEN_CONFIGS: Record<string, ManualTokenConfig[]> = {
   deepseek: [
     {
       providerType: 'deepseek',
@@ -208,4 +211,5 @@ export const MANUAL_TOKEN_CONFIGS: Record<ProviderType, ManualTokenConfig[]> = {
       helpUrl: 'https://www.perplexity.ai',
     },
   ],
+  ...pluginManualTokenConfigs,
 }
