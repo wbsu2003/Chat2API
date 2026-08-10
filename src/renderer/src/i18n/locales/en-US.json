@@ -30,7 +30,7 @@
     "thinking": "Thinking...",
     "streaming": "Generating, click stop to cancel",
     "errors": {
-      "proxyNotRunning": "The local API server is not running. Start it from Proxy Settings first.",
+      "proxyStartFailed": "Could not start the local API server. Check Proxy Settings for a port conflict.",
       "noApiKey": "API key authentication is enabled but no key is available. Add and enable one on the API Keys page.",
       "noModel": "Select a model first"
     }
@@ -54,6 +54,8 @@
     "modeInherit": "Inherit global",
     "modeDirect": "Force direct",
     "modeCustom": "Custom",
+    "inlineTitle": "Network Proxy",
+    "inlineDescription": "Configure this before adding an account. The in-app login window loads the provider's site, so without a working proxy the login page never appears and no credentials can be captured.",
     "test": "Test",
     "outboundIp": "Outbound IP",
     "saved": "Saved",

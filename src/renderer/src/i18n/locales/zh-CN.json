@@ -30,7 +30,7 @@
     "thinking": "思考中…",
     "streaming": "正在生成，可点击停止",
     "errors": {
-      "proxyNotRunning": "本地 API 服务未启动，请先在「代理设置」中启动",
+      "proxyStartFailed": "本地 API 服务启动失败，请到「代理设置」查看端口是否被占用",
       "noApiKey": "已启用 API Key 认证，但没有可用的密钥，请在「API Key」页添加并启用",
       "noModel": "请先选择模型"
     }
@@ -54,6 +54,8 @@
     "modeInherit": "继承全局",
     "modeDirect": "强制直连",
     "modeCustom": "自定义",
+    "inlineTitle": "网络代理",
+    "inlineDescription": "添加账号前先配好。应用内登录窗口要加载该供应商的官网，直连不通时登录页根本打不开，也就拿不到凭据。",
     "test": "测试",
     "outboundIp": "出口 IP",
     "saved": "已保存",

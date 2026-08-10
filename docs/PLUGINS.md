@@ -166,9 +166,21 @@ actual assertion detail has not been captured yet. Re-enable by dropping the
 `grep -v 'tests/skills/'` filter in `.github/workflows/ci-windows.yml`.
 
 CI (`.github/workflows/ci-windows.yml`) builds Windows only and uploads nothing
-by default. Run it manually with `upload_installer: true` to get an installer
-artifact (3-day retention). Releases publish to GitHub Releases, whose assets do
-not count against the Actions artifact quota.
+by default.
+
+To get an installer, either:
+
+- push a commit whose message contains `[installer]`, or
+- run the workflow manually with `upload_installer: true`
+
+The commit-message route exists because `workflow_dispatch` only appears for
+workflows present on the **default branch**; while this work lives on a feature
+branch, the manual button is not available.
+
+The installer lands under the run's Artifacts as `chat2api-win-x64-installer`
+(~90MB, 3-day retention). The `--dir` unpacked output (~250MB) is never
+uploaded. Releases publish to GitHub Releases, whose assets do not count
+against the Actions artifact quota.
 
 ### Lockfile
 
